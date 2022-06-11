@@ -1,0 +1,56 @@
+plugins {
+    id "java"
+    id "java-gradle-plugin"
+    id "maven-publish"
+    id "org.cadixdev.licenser" version "0.5.0"
+}
+
+repositories {
+    maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://maven.architectury.dev/" }
+    gradlePluginPortal()
+}
+
+def runNumber = System.getenv("GITHUB_RUN_NUMBER") ?: "9999"
+group "me.shedaniel"
+version "0.1.$runNumber"
+
+license {
+    header = rootProject.file("HEADER")
+
+    ext {
+        name = "shedaniel"
+        year = "2022"
+    }
+
+    include "**/*.java"
+}
+
+publishing {
+    repositories {
+        if (System.getenv("MAVEN_PASS") != null) {
+            maven {
+                url = "https://deploy.shedaniel.me/"
+                credentials {
+                    username = "shedaniel"
+                    password = System.getenv("MAVEN_PASS")
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    api "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
+    api "com.modrinth.minotaur:Minotaur:2.2.1"
+}
+
+gradlePlugin {
+    plugins {
+        plugin {
+            id = "me.shedaniel.unified-publishing"
+            implementationClass = "me.shedaniel.unifiedpublishing.UnifiedPublishingPlugin"
+        }
+    }
+}
