@@ -21,13 +21,18 @@ package me.shedaniel.unifiedpublishing;
 import com.google.common.collect.ImmutableMap;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 
 public class UnifiedPublishingPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
+        Task baseTask = project.getTasks().maybeCreate("publishUnified");
+        baseTask.setDescription("Uploads all projects");
+        baseTask.setGroup("upload");
+        baseTask.getOutputs().upToDateWhen(task -> false);
         project.afterEvaluate(p -> {
             UnifiedPublishingExtension extension = p.getExtensions().getByType(UnifiedPublishingExtension.class);
-            extension.onConfigure(p);
+            extension.onConfigure(p, baseTask);
         });
         project.apply(ImmutableMap.of("plugin", "com.modrinth.minotaur"));
         project.apply(ImmutableMap.of("plugin", "com.matthewprenger.cursegradle"));

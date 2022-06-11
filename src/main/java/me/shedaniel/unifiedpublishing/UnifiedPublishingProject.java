@@ -53,7 +53,6 @@ public class UnifiedPublishingProject {
     public CurseforgePublishingTarget curseforge;
     @Nullable
     public ModrinthPublishingTarget modrinth;
-    private final Task baseTask;
     
     @Inject
     public UnifiedPublishingProject(Project project) {
@@ -76,14 +75,9 @@ public class UnifiedPublishingProject {
         this.mainPublicationDependencies = project.getObjects().listProperty(Task.class);
         
         this.relations = project.getObjects().newInstance(ProjectRelations.class, project);
-        
-        baseTask = project.getTasks().maybeCreate("publishUnified");
-        baseTask.setDescription("Uploads all projects");
-        baseTask.setGroup("upload");
-        baseTask.getOutputs().upToDateWhen(task -> false);
     }
     
-    public void onConfigure(Project project) {
+    public void onConfigure(Project project, Task baseTask) {
         Stream.of(this.curseforge, this.modrinth)
                 .filter(Objects::nonNull)
                 .forEach(target -> {

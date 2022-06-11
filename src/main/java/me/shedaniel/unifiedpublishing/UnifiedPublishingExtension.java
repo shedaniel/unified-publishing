@@ -20,6 +20,7 @@ package me.shedaniel.unifiedpublishing;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -40,9 +41,9 @@ public class UnifiedPublishingExtension {
         action.execute(project);
     }
     
-    public void onConfigure(Project project) {
+    public void onConfigure(Project project, Task baseTask) {
         for (UnifiedPublishingProject publishingProject : this.projects) {
-            publishingProject.onConfigure(project);
+            publishingProject.onConfigure(project, baseTask);
         }
     }
 }
