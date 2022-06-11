@@ -61,18 +61,18 @@ public class UnifiedPublishingProject {
     public UnifiedPublishingProject(Project project) {
         this.project = project;
         
-        this.version = project.getObjects().property(String.class)
-                .convention(project.provider(() -> project.getVersion().toString()));
-        this.displayName = project.getObjects().property(String.class)
-                .convention(this.version);
-        this.changelog = project.getObjects().property(String.class)
-                .convention("");
-        this.releaseType = project.getObjects().property(String.class)
-                .convention("release");
-        this.gameVersions = project.getObjects().listProperty(String.class)
-                .convention(new ArrayList<>());
-        this.gameLoaders = project.getObjects().listProperty(String.class)
-                .convention(new ArrayList<>());
+        this.version = project.getObjects().property(String.class);
+        this.version.set(project.provider(() -> project.getVersion().toString()));
+        this.displayName = project.getObjects().property(String.class);
+        this.displayName.set(this.version);
+        this.changelog = project.getObjects().property(String.class);
+        this.changelog.set("");
+        this.releaseType = project.getObjects().property(String.class);
+        this.releaseType.set("release");
+        this.gameVersions = project.getObjects().listProperty(String.class);
+        this.gameVersions.set(new ArrayList<>());
+        this.gameLoaders = project.getObjects().listProperty(String.class);
+        this.gameLoaders.set(new ArrayList<>());
         
         this.mainPublication = project.getObjects().fileProperty();
         this.secondaryPublications = project.getObjects().fileCollection();

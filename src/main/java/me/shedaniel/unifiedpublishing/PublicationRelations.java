@@ -40,30 +40,30 @@ public class PublicationRelations {
     public PublicationRelations(Project project, ProjectRelations relations, Function<ProjectRelation, Property<String>> extractor) {
         this.project = project;
         
-        this.depends = project.getObjects().listProperty(String.class)
-                .convention(project.provider(() -> relations.depends.getOrElse(Collections.emptyList())
-                        .stream()
-                        .map(relation -> extractor.apply(relation).getOrNull())
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList())));
-        this.includes = project.getObjects().listProperty(String.class)
-                .convention(project.provider(() -> relations.includes.getOrElse(Collections.emptyList())
-                        .stream()
-                        .map(relation -> extractor.apply(relation).getOrNull())
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList())));
-        this.optionals = project.getObjects().listProperty(String.class)
-                .convention(project.provider(() -> relations.optionals.getOrElse(Collections.emptyList())
-                        .stream()
-                        .map(relation -> extractor.apply(relation).getOrNull())
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList())));
-        this.conflicts = project.getObjects().listProperty(String.class)
-                .convention(project.provider(() -> relations.conflicts.getOrElse(Collections.emptyList())
-                        .stream()
-                        .map(relation -> extractor.apply(relation).getOrNull())
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList())));
+        this.depends = project.getObjects().listProperty(String.class);
+        this.depends.set(project.provider(() -> relations.depends.getOrElse(Collections.emptyList())
+                .stream()
+                .map(relation -> extractor.apply(relation).getOrNull())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())));
+        this.includes = project.getObjects().listProperty(String.class);
+        this.includes.set(project.provider(() -> relations.includes.getOrElse(Collections.emptyList())
+                .stream()
+                .map(relation -> extractor.apply(relation).getOrNull())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())));
+        this.optionals = project.getObjects().listProperty(String.class);
+        this.optionals.set(project.provider(() -> relations.optionals.getOrElse(Collections.emptyList())
+                .stream()
+                .map(relation -> extractor.apply(relation).getOrNull())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())));
+        this.conflicts = project.getObjects().listProperty(String.class);
+        this.conflicts.set(project.provider(() -> relations.conflicts.getOrElse(Collections.emptyList())
+                .stream()
+                .map(relation -> extractor.apply(relation).getOrNull())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())));
     }
     
     public void depends(String relationship) {

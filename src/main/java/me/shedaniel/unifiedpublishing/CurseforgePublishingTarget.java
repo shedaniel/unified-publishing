@@ -21,7 +21,6 @@ package me.shedaniel.unifiedpublishing;
 
 import com.matthewprenger.cursegradle.*;
 import groovy.lang.Closure;
-import org.codehaus.groovy.util.StringUtil;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.provider.Property;

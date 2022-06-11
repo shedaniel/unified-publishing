@@ -47,26 +47,26 @@ public class BasePublishingTarget {
     public final ListProperty<Task> publicationDependencies;
     
     public BasePublishingTarget(Project project, UnifiedPublishingProject extension, Function<ProjectRelation, Property<String>> extractor) {
-        this.displayName = project.getObjects().property(String.class)
-                .convention(extension.displayName);
-        this.version = project.getObjects().property(String.class)
-                .convention(extension.version);
-        this.changelog = project.getObjects().property(String.class)
-                .convention(extension.changelog);
-        this.releaseType = project.getObjects().property(String.class)
-                .convention(extension.releaseType);
-        this.gameVersions = project.getObjects().listProperty(String.class)
-                .convention(extension.gameVersions);
-        this.gameLoaders = project.getObjects().listProperty(String.class)
-                .convention(extension.gameLoaders);
+        this.displayName = project.getObjects().property(String.class);
+        this.displayName.set(extension.displayName);
+        this.version = project.getObjects().property(String.class);
+        this.version.set(extension.version);
+        this.changelog = project.getObjects().property(String.class);
+        this.changelog.set(extension.changelog);
+        this.releaseType = project.getObjects().property(String.class);
+        this.releaseType.set(extension.releaseType);
+        this.gameVersions = project.getObjects().listProperty(String.class);
+        this.gameVersions.set(extension.gameVersions);
+        this.gameLoaders = project.getObjects().listProperty(String.class);
+        this.gameLoaders.set(extension.gameLoaders);
         
         this.relations = project.getObjects().newInstance(PublicationRelations.class, project, extension.relations, extractor);
         
-        this.mainPublication = project.getObjects().fileProperty()
-                .convention(extension.mainPublication);
+        this.mainPublication = project.getObjects().fileProperty();
+        this.mainPublication.set(extension.mainPublication);
         this.secondaryPublications = project.getObjects().fileCollection();
-        this.publicationDependencies = project.getObjects().listProperty(Task.class)
-                .convention(extension.publicationDependencies);
+        this.publicationDependencies = project.getObjects().listProperty(Task.class);
+        this.publicationDependencies.set(extension.publicationDependencies);
     }
     
     public void mainPublication(Task task) {
