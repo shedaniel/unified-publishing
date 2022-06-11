@@ -54,11 +54,7 @@ public class ModrinthPublishingTarget extends BasePublishingTarget {
     
     @Override
     public void configure(Project project, Task baseTask) {
-        String token = Objects.requireNonNull(this.token.getOrNull(), "CurseForge target has unspecified token!");
         String projectId = Objects.requireNonNull(this.id.getOrNull(), "CurseForge target has unspecified project ID!");
-        String displayName = this.displayName.getOrNull();
-        String releaseType = this.releaseType.get();
-        String changelog = this.changelog.get();
         
         TaskModrinthUpload task = project.getTasks().create("modrinth" + projectId, TaskModrinthUpload.class, this);
         baseTask.dependsOn(task);

@@ -21,6 +21,7 @@ package me.shedaniel.unifiedpublishing;
 
 import com.matthewprenger.cursegradle.*;
 import groovy.lang.Closure;
+import org.codehaus.groovy.util.StringUtil;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.provider.Property;
@@ -29,6 +30,7 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,6 +54,14 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
         });
     }
     
+    public static String capitalise(String str) {
+        if (str == null) {
+            return null;
+        } else {
+            return str.length() == 0 ? "" : Character.toTitleCase(str.charAt(0)) + str.substring(1);
+        }
+    }
+    
     @Override
     public void configure(Project project, Task baseTask) {
         project.getTasks().getByName("curseforge", baseTask::dependsOn);
@@ -62,7 +72,9 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
         String displayName = this.displayName.getOrNull();
         String releaseType = this.releaseType.get();
         String changelog = this.changelog.get();
-        List<Object> versionStrings = Stream.of(this.gameVersions.get().stream(), this.gameLoaders.get().stream())
+        List<Object> versionStrings = Stream.of(this.gameVersions.get().stream(),
+                        this.gameLoaders.get().stream().map(CurseforgePublishingTarget::capitalise))
+                .flatMap(Function.identity())
                 .distinct().collect(Collectors.toList());
         
         CurseArtifact mainArtifact = new CurseArtifact();
