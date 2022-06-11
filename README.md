@@ -1,6 +1,22 @@
 # Unified Publishing
 
 ### Usage
+settings.gradle:
+```groovy
+pluginManagement {
+    repositories {
+        maven { url "https://maven.architectury.dev/" }
+        gradlePluginPortal()
+    }
+}
+```
+
+build.gradle:
+```groovy
+plugins {
+    id "me.shedaniel.unified-publishing" version "0.1.+"
+}
+```
 
 Most Simple Usage:
 
