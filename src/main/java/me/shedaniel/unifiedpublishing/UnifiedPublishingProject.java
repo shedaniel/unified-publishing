@@ -1,19 +1,20 @@
 /*
  * Copyright (C) 2022 shedaniel
  *
- * This program is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * , MA  02110-1301, USA.
  */
 
 package me.shedaniel.unifiedpublishing;
@@ -21,6 +22,7 @@ package me.shedaniel.unifiedpublishing;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
@@ -45,7 +47,8 @@ public class UnifiedPublishingProject {
     public final ListProperty<String> gameLoaders;
     
     public final RegularFileProperty mainPublication;
-    public final ListProperty<Task> mainPublicationDependencies;
+    public final ConfigurableFileCollection secondaryPublications;
+    public final ListProperty<Task> publicationDependencies;
     
     public final ProjectRelations relations;
     
@@ -72,7 +75,9 @@ public class UnifiedPublishingProject {
                 .convention(new ArrayList<>());
         
         this.mainPublication = project.getObjects().fileProperty();
-        this.mainPublicationDependencies = project.getObjects().listProperty(Task.class);
+        this.secondaryPublications = project.getObjects().fileCollection();
+        this.publicationDependencies = project.getObjects().listProperty(Task.class)
+                .empty();
         
         this.relations = project.getObjects().newInstance(ProjectRelations.class, project);
     }
@@ -108,7 +113,11 @@ public class UnifiedPublishingProject {
     }
     
     public void mainPublicationDepends(Task... tasks) {
-        this.mainPublicationDependencies.addAll(tasks);
+        this.publicationDependencies.addAll(tasks);
+    }
+    
+    public void secondaryPublication(Provider<RegularFile> file) {
+        this.secondaryPublications.from(file);
     }
     
     public void relations(Action<ProjectRelations> action) {
@@ -143,7 +152,11 @@ public class UnifiedPublishingProject {
         return mainPublication;
     }
     
+    public ConfigurableFileCollection getSecondaryPublications() {
+        return secondaryPublications;
+    }
+    
     public ListProperty<Task> getMainPublicationDependencies() {
-        return mainPublicationDependencies;
+        return publicationDependencies;
     }
 }
