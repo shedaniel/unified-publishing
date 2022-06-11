@@ -105,6 +105,10 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
             }
         });
         
+        if (mainArtifact.getCurseRelations().getProjects().isEmpty()) {
+            mainArtifact.setCurseRelations(null);
+        }
+        
         if (uploadTask != null) {
             uploadTask.setProjectId(projectId);
             
