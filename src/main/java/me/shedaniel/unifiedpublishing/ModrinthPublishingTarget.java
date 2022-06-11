@@ -97,6 +97,10 @@ public class ModrinthPublishingTarget extends BasePublishingTarget {
     private String resolveId(CloseableHttpClient client, String relation) throws IOException {
         HttpGet get = new HttpGet("https://api.modrinth.com/v2/project/" + relation);
         CloseableHttpResponse response = client.execute(get);
+        int code = response.getStatusLine().getStatusCode();
+        if (code != 200) {
+            throw new IOException("Failed to resolve project ID for " + relation + ": " + code);
+        }
         String returned = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8.toString());
         JsonElement element = new JsonParser().parse(returned);
         if (!element.isJsonObject()) {
