@@ -103,6 +103,7 @@ public class UnifiedPublishingProject {
     public void mainPublication(Task task) {
         if (task instanceof AbstractArchiveTask) {
             this.mainPublication.set(task.getProject().provider(() -> ((AbstractArchiveTask) task).getArchiveFile().get()));
+            this.publicationDependencies.add(task);
         } else {
             throw new IllegalArgumentException("Task must be an AbstractArchiveTask");
         }
