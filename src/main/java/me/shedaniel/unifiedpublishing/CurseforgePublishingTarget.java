@@ -80,6 +80,7 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
         mainArtifact.setArtifact(this.mainPublication);
         if (displayName != null) mainArtifact.setDisplayName(displayName);
         mainArtifact.setReleaseType(releaseType);
+        mainArtifact.setChangelogType("markdown");
         mainArtifact.setChangelog(changelog);
         mainArtifact.setGameVersionStrings(versionStrings);
         mainArtifact.relations(new Closure(null) {
@@ -118,6 +119,7 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
             this.curseProject.setApiKey(token);
             this.curseProject.setId(projectId);
             this.curseProject.setReleaseType(releaseType);
+            this.curseProject.setChangelogType("markdown");
             this.curseProject.setChangelog(changelog);
             this.curseProject.setGameVersionStrings(versionStrings);
             
