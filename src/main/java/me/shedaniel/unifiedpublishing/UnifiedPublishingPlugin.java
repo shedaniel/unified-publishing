@@ -35,6 +35,9 @@ public class UnifiedPublishingPlugin implements Plugin<Project> {
             UnifiedPublishingExtension extension = p.getExtensions().getByType(UnifiedPublishingExtension.class);
             extension.onConfigure(p, baseTask);
         });
+        if (project.getPluginManager().hasPlugin("com.matthewprenger.cursegradle")) {
+            throw new IllegalStateException("CurseGradle is already applied! Please remove it!");
+        }
         project.apply(ImmutableMap.of("plugin", "com.matthewprenger.cursegradle"));
         project.getExtensions().create("unifiedPublishing", UnifiedPublishingExtension.class, project);
     }
