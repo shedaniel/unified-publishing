@@ -72,7 +72,9 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
         String releaseType = this.releaseType.get();
         String changelog = this.changelog.get();
         List<Object> versionStrings = Stream.of(this.gameVersions.get().stream(),
-                        this.gameLoaders.get().stream().map(CurseforgePublishingTarget::capitalise))
+                        this.gameLoaders.get().stream().map(s -> {
+                            return Objects.equals(s, "neoforge") ? "NeoForge" : CurseforgePublishingTarget.capitalise(s);
+                        }))
                 .flatMap(Function.identity())
                 .distinct().collect(Collectors.toList());
         
