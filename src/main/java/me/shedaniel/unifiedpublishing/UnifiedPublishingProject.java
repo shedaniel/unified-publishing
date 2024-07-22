@@ -32,12 +32,17 @@ import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public class UnifiedPublishingProject {
     private final Project project;
+    private final int projectIndex;
     
     public final Property<String> displayName;
     public final Property<String> version;
@@ -58,8 +63,9 @@ public class UnifiedPublishingProject {
     public ModrinthPublishingTarget modrinth;
     
     @Inject
-    public UnifiedPublishingProject(Project project) {
+    public UnifiedPublishingProject(Project project, int projectIndex) {
         this.project = project;
+        this.projectIndex = projectIndex;
         
         this.version = project.getObjects().property(String.class);
         this.version.set(project.provider(() -> project.getVersion().toString()));
@@ -82,12 +88,35 @@ public class UnifiedPublishingProject {
         this.relations = project.getObjects().newInstance(ProjectRelations.class, project);
     }
     
-    public void onConfigure(Project project, Task baseTask) {
+    public void onConfigure(Project project, Task baseTask, Task baseLocalTask) {
         Stream.of(this.curseforge, this.modrinth)
                 .filter(Objects::nonNull)
                 .forEach(target -> {
                     target.configure(project, baseTask);
                 });
+        
+        Task uploadLocalTask = project.getTasks().create("publishUnifiedToLocal_project" + projectIndex);
+        uploadLocalTask.setDescription("Uploads unified #" + projectIndex + " project to local build/unified-local/");
+        uploadLocalTask.setGroup("upload");
+        uploadLocalTask.getOutputs().upToDateWhen($ -> false);
+        uploadLocalTask.dependsOn(this.publicationDependencies);
+        uploadLocalTask.dependsOn(this.secondaryPublications.getBuiltBy());
+        //noinspection Convert2Lambda
+        uploadLocalTask.doLast(new Action<>() {
+            @Override
+            public void execute(Task task) {
+                try {
+                    Path localDir = project.getBuildDir().toPath().resolve("unified-local").resolve("project" + projectIndex);
+                    Files.createDirectories(localDir);
+                    Path artifact = mainPublication.get().getAsFile().toPath();
+                    Path target = localDir.resolve(artifact.getFileName());
+                    Files.copy(artifact, target, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to copy local unified publication.", e);
+                }
+            }
+        });
+        baseLocalTask.dependsOn(uploadLocalTask);
     }
     
     public void curseforge(Action<CurseforgePublishingTarget> action) {

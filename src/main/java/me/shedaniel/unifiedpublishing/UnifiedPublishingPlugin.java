@@ -31,9 +31,13 @@ public class UnifiedPublishingPlugin implements Plugin<Project> {
         baseTask.setDescription("Uploads all projects");
         baseTask.setGroup("upload");
         baseTask.getOutputs().upToDateWhen(task -> false);
+        Task baseLocalTask = project.getTasks().maybeCreate("publishUnifiedToLocal");
+        baseLocalTask.setDescription("Uploads all projects to local build/unified-local/");
+        baseLocalTask.setGroup("upload");
+        baseLocalTask.getOutputs().upToDateWhen(task -> false);
         project.afterEvaluate(p -> {
             UnifiedPublishingExtension extension = p.getExtensions().getByType(UnifiedPublishingExtension.class);
-            extension.onConfigure(p, baseTask);
+            extension.onConfigure(p, baseTask, baseLocalTask);
         });
         if (project.getPluginManager().hasPlugin("com.matthewprenger.cursegradle")) {
             throw new IllegalStateException("CurseGradle is already applied! Please remove it!");

@@ -30,6 +30,7 @@ import java.util.List;
 public class UnifiedPublishingExtension {
     private final List<UnifiedPublishingProject> projects = new ArrayList<>();
     private final Project project;
+    private int projectCounter = 0;
     
     @Inject
     public UnifiedPublishingExtension(Project project) {
@@ -37,14 +38,14 @@ public class UnifiedPublishingExtension {
     }
     
     public void project(Action<UnifiedPublishingProject> action) {
-        UnifiedPublishingProject project = this.project.getObjects().newInstance(UnifiedPublishingProject.class, this.project);
+        UnifiedPublishingProject project = this.project.getObjects().newInstance(UnifiedPublishingProject.class, this.project, this.projectCounter++);
         this.projects.add(project);
         action.execute(project);
     }
     
-    public void onConfigure(Project project, Task baseTask) {
+    public void onConfigure(Project project, Task baseTask, Task baseLocalTask) {
         for (UnifiedPublishingProject publishingProject : this.projects) {
-            publishingProject.onConfigure(project, baseTask);
+            publishingProject.onConfigure(project, baseTask, baseLocalTask);
         }
     }
 }
