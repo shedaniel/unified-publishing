@@ -26,12 +26,14 @@ import org.gradle.api.Task;
 import org.gradle.api.provider.Property;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 public class CurseforgePublishingTarget extends BasePublishingTarget {
     private CurseProject curseProject;
@@ -78,7 +80,7 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
                 .flatMap(Function.identity())
                 .distinct().collect(Collectors.toList());
         
-        CurseArtifact mainArtifact = new CurseArtifact();
+        CurseArtifact mainArtifact = new EnvironmentArtifact();
         mainArtifact.setArtifact(this.mainPublication);
         if (displayName != null) mainArtifact.setDisplayName(displayName);
         mainArtifact.setReleaseType(releaseType);
@@ -135,6 +137,28 @@ public class CurseforgePublishingTarget extends BasePublishingTarget {
         }
     }
     
+    // CurseGradle 1.4.0 filters out the environment version group during name resolution.
+    static class EnvironmentArtifact extends CurseArtifact {
+        private transient int[] environments = new int[0];
+
+        @Override
+        public void setGameVersionStrings(java.util.Collection<Object> versions) {
+            environments = versions.stream().mapToInt(version -> {
+                if ("Client".equalsIgnoreCase(version.toString())) return 9638;
+                if ("Server".equalsIgnoreCase(version.toString())) return 9639;
+                return 0;
+            }).filter(id -> id != 0).distinct().toArray();
+            super.setGameVersionStrings(versions.stream().filter(version ->
+                    !"Client".equalsIgnoreCase(version.toString()) && !"Server".equalsIgnoreCase(version.toString()))
+                    .collect(Collectors.toList()));
+        }
+
+        @Override
+        public void setGameVersions(int... versions) {
+            super.setGameVersions(IntStream.concat(Arrays.stream(versions), Arrays.stream(environments)).distinct().toArray());
+        }
+    }
+
     public Property<String> getToken() {
         return token;
     }
